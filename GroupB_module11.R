@@ -90,4 +90,23 @@ shapiro.test(aov$residuals) # p value significant, not what we want
 ##########################################
 ## Hypothesis: temperature and abundance are positively correlated
 ##########################################
+par(mfrow = c(1,1))
+
+hist(ants$Abundance)
+hist(ants$Delta)
+
+plot(ants$Abundance, ants$Delta)
+
+# data doesn't look normal -> non-parametric tests needed
+
+cor.test(ants$Abundance, ants$Delta, method = "spearman")
+## have ties, use kendall not spearman
+cor.test(ants$Abundance, ants$Delta, method = "kendall")
+## not significant
+
+kruskal.test(ants$Abundance ~ ants$Delta)
+# not significant
+
+## No, the interpretation would be the same - that the Abundance is not
+## significantly correlated with temperature changes
 
