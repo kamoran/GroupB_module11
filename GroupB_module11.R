@@ -1,6 +1,6 @@
 ## NR 995 Module 11
 ## Correlation and ANOVA 
-## Group B, Erica Holme and Katie Moran
+## Group B, Erica Holm and Katie Moran
 ## Last modified: 11/07/17
 
 ## Set wd and read in ants_duke.csv
@@ -17,13 +17,17 @@ summary(ants)
 length(unique(ants$Binom)) # 5 ant species in dataset
 length(unique(ants$Delta)) # 12 unique temp treatments (Delta)
 unique(is.na(ants)) # no NAs in data set
+range(ants$Delta)
+range(ants$CTmax)
 
 ## Do the values and descriptive statistics of numerical
 ## variables make sense with their definitions above? 
-## KM to EH: I'm unsure on answering this question. Delta has a vague definition--why are Delta values much less
-## than the CTmax? Is Delta measuring an increase in temperature above the 
-## ant's resting temperature? Also not sure if there are other descriptive statistics we
-## should be doing... Thoughts? 
+
+## Yes, the values and descriptive stats make sense with their definitions
+## Binom - there are 5 different ant species
+## Abundance - counts of individuals range from 1 to 100
+## Delta - temperature treatments range from a change of 1 to a change of 12
+## CTmax - lethal temperatures range from 39.2 to 45.6 degrees
 
 ##########################################################################
 ## Categorize values into low, moderate, and high Delta classes
@@ -35,10 +39,12 @@ ants$DeltaClass[ants$Delta >8] <- "high"
 ants$DeltaClass[ants$Delta >4 & ants$Delta <= 8] <- "moderate"
 ants # yay it worked
 
+ants$Delta1 <- as.factor(ants$DeltaClass)
 summary(ants)
-length(ants$DeltaClass[ants$DeltaClass == "low"]) # 18 low Delta observations
-length(ants$DeltaClass[ants$DeltaClass == "moderate"]) # 18 moderate Delta observations
-length(ants$DeltaClass[ants$DeltaClass == "high"]) # 18 high Delta observations
+str(ants)
+# 18 low Delta observations
+# 18 moderate Delta observations
+# 18 high Delta observations
 
 
 ##########################################################################
@@ -50,29 +56,38 @@ library(Hmisc)
 
 ## check assumptions
 hist(ants$Abundance) # not normally distributed, much higher frequency of low abundances
-hist(ants$DeltaClass) # couldn't do histogram because not numerical
+hist(ants$Delta1) # couldn't do histogram because not numerical
+# would be the same across all categories because there are 18 of each
 
-boxplot(ants$Abundance ~ ants$DeltaClass)
+boxplot(ants$Abundance ~ ants$Delta1) 
+# abundance is higher w/low delta? lots of variance within
 
-aov <- aov(ants$Abundance ~ ants$DeltaClass)
+aov <- aov(ants$Abundance ~ ants$Delta1)
 aov
 summary(aov) #not statistically significant
 
-reg <- lm(ants$Abundance ~ ants$DeltaClass)
+reg <- lm(ants$Abundance ~ ants$Delta1)
 summary(reg)
+# abundance does not differ based on delta class
+# P value is 0.266 between low and high (not different)
+# P value is 0.829 between moderate and high (really not different)
 
-TukeyHSD(aov)
-plot(TukeyHSD(aov))
+# don't need to run Tukey or lm because the ANOVA result wasn't significant
+# (don't need to investigate which variables are significant because all aren't)
 
 ## test assumptions
 install.packages("car")
 library(car)
 
-leveneTest(ants$Abundance ~ ants$DeltaClass) # p > 0.05
-bartlett.test(ants$Abundance ~ ants$DeltaClass) # p > 0.05
+leveneTest(ants$Abundance ~ ants$Delta1) # p > 0.05
+bartlett.test(ants$Abundance ~ ants$Delta1) # p > 0.05
 
 par(mfrow = c(2,2))
 plot(aov)
 
 shapiro.test(aov$residuals) # p value significant, not what we want
+
+##########################################
+## Hypothesis: temperature and abundance are positively correlated
+##########################################
 
