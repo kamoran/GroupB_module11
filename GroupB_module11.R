@@ -107,6 +107,12 @@ cor.test(ants$Abundance, ants$Delta, method = "kendall")
 kruskal.test(ants$Abundance ~ ants$Delta)
 # not significant
 
-## No, the interpretation would be the same - that the Abundance is not
+## No, the interpretation would be the same - that ant Abundance is not
 ## significantly correlated with temperature changes
 
+##########################################
+## Contributions
+##########################################
+
+## Katie created the Git repo and worked on questions 1-3, Eric worked on
+## 1,3,4 and reviewed/edited code.
