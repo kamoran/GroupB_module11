@@ -66,23 +66,21 @@ aov <- aov(ants$Abundance ~ ants$Delta1)
 aov
 summary(aov) #not statistically significant
 
-reg <- lm(ants$Abundance ~ ants$Delta1)
-summary(reg) ## this is what we originally did
-
+# use Poisson glm because Abundance is count data
 reg <- glm(ants$Abundance ~ ants$Delta1, data = ants, family = "poisson")
-summary(reg) ## should this what we do since Abundance is a count data? 
+summary(reg) 
 ## provides significant result for low delta class
 
-# abundance does not differ based on delta class
-# P value is 0.266 between low and high (not different)
-# P value is 0.829 between moderate and high (really not different)
+# Abundance does not differ based on delta class according to ANOVA
+# but Poisson p value is significant for Delta low class, meaning that low
+# delta temp applications result in greater ant abundance. P values were not 
+# significant for high and moderate delta classes, meaning that they cannot be
+# used to predict ant abundance. 
 
-# don't need to run Tukey or lm because the ANOVA result wasn't significant
-# (don't need to investigate which variables are significant because all aren't)
-
+# Tukey post-hoc
 TukeyHSD(aov)
 plot(TukeyHSD(aov))
-
+# no significant p values, as expected from ANOVA findings. 
 
 ## test assumptions
 install.packages("car")
@@ -90,11 +88,14 @@ library(car)
 
 leveneTest(ants$Abundance ~ ants$Delta1) # p > 0.05
 bartlett.test(ants$Abundance ~ ants$Delta1) # p > 0.05
+# can accept null that variances are equal
 
 par(mfrow = c(2,2))
 plot(aov)
 
-shapiro.test(aov$residuals) # p value significant, not what we want
+shapiro.test(aov$residuals) # p < 0.05
+# not what we want 
+# reject null hypothesis, residuals not normally distributed
 
 ##########################################
 ## Hypothesis: temperature and abundance are positively correlated
