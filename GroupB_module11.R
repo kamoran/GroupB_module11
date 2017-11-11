@@ -67,13 +67,22 @@ aov
 summary(aov) #not statistically significant
 
 reg <- lm(ants$Abundance ~ ants$Delta1)
-summary(reg)
+summary(reg) ## this is what we originally did
+
+reg <- glm(ants$Abundance ~ ants$Delta1, data = ants, family = "poisson")
+summary(reg) ## should this what we do since Abundance is a count data? 
+## provides significant result for low delta class
+
 # abundance does not differ based on delta class
 # P value is 0.266 between low and high (not different)
 # P value is 0.829 between moderate and high (really not different)
 
 # don't need to run Tukey or lm because the ANOVA result wasn't significant
 # (don't need to investigate which variables are significant because all aren't)
+
+TukeyHSD(aov)
+plot(TukeyHSD(aov))
+
 
 ## test assumptions
 install.packages("car")
